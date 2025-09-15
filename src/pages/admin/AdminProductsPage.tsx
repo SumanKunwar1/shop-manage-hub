@@ -72,7 +72,7 @@ export default function AdminProductsPage() {
   } = useProductStore();
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -98,7 +98,7 @@ export default function AdminProductsPage() {
     if (searchQuery && !product.title.toLowerCase().includes(searchQuery.toLowerCase())) {
       return false;
     }
-    if (selectedCategory && product.category !== selectedCategory) {
+    if (selectedCategory && selectedCategory !== 'all' && product.category !== selectedCategory) {
       return false;
     }
     return true;
@@ -250,7 +250,7 @@ export default function AdminProductsPage() {
                   <SelectValue placeholder="All Categories" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Categories</SelectItem>
+                  <SelectItem value="all">All Categories</SelectItem>
                   {categories.map((category) => (
                     <SelectItem key={category} value={category} className="capitalize">
                       {category}
@@ -259,12 +259,12 @@ export default function AdminProductsPage() {
                 </SelectContent>
               </Select>
               
-              {(searchQuery || selectedCategory) && (
+              {(searchQuery || (selectedCategory && selectedCategory !== 'all')) && (
                 <Button 
                   variant="outline" 
                   onClick={() => {
                     setSearchQuery('');
-                    setSelectedCategory('');
+                    setSelectedCategory('all');
                     setCurrentPage(1);
                   }}
                 >

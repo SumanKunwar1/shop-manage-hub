@@ -29,8 +29,8 @@ export default function ProductsPage() {
   const { addItem } = useCartStore();
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
-  const [sortBy, setSortBy] = useState<string>('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [sortBy, setSortBy] = useState('default');
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
@@ -44,7 +44,7 @@ export default function ProductsPage() {
   useEffect(() => {
     const newFilters: ProductFilters = {
       search: searchQuery || undefined,
-      category: selectedCategory || undefined,
+      category: selectedCategory === 'all' ? undefined : selectedCategory || undefined,
     };
     setFilters(newFilters);
     setCurrentPage(1);
@@ -61,6 +61,7 @@ export default function ProductsPage() {
         return b.rating.rate - a.rating.rate;
       case 'name':
         return a.title.localeCompare(b.title);
+      case 'default':
       default:
         return 0;
     }
@@ -73,8 +74,8 @@ export default function ProductsPage() {
 
   const handleClearFilters = () => {
     setSearchQuery('');
-    setSelectedCategory('');
-    setSortBy('');
+    setSelectedCategory('all');
+    setSortBy('default');
     clearFilters();
     setCurrentPage(1);
   };
@@ -111,7 +112,7 @@ export default function ProductsPage() {
               <SelectValue placeholder="All Categories" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Categories</SelectItem>
+              <SelectItem value="all">All Categories</SelectItem>
               {categories.map((category) => (
                 <SelectItem key={category} value={category} className="capitalize">
                   {category}
@@ -126,7 +127,7 @@ export default function ProductsPage() {
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Default</SelectItem>
+              <SelectItem value="default">Default</SelectItem>
               <SelectItem value="price-low">Price: Low to High</SelectItem>
               <SelectItem value="price-high">Price: High to Low</SelectItem>
               <SelectItem value="rating">Highest Rated</SelectItem>
@@ -153,7 +154,7 @@ export default function ProductsPage() {
           </div>
 
           {/* Clear Filters */}
-          {(searchQuery || selectedCategory || sortBy) && (
+          {(searchQuery || (selectedCategory && selectedCategory !== 'all') || (sortBy && sortBy !== 'default')) && (
             <Button variant="outline" onClick={handleClearFilters}>
               Clear Filters
             </Button>
